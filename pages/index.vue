@@ -17,27 +17,37 @@
         <v-row>
           <v-col cols="4">
             <v-checkbox
+              v-model="checkbox"
               label="1 estrella"
+              @change="filtro(1)"
             />
           </v-col>
           <v-col cols="4">
             <v-checkbox
+              v-model="checkbox1"
               label="2 estrellas"
+              @change="filtro(2)"
             />
           </v-col>
           <v-col cols="4">
             <v-checkbox
+              v-model="checkbox2"
               label="3 estrellas"
+              @change="filtro(3)"
             />
           </v-col>
           <v-col cols="4">
             <v-checkbox
+              v-model="checkbox3"
               label="4 estrellas"
+              @change="filtro(4)"
             />
           </v-col>
           <v-col cols="4">
             <v-checkbox
+              v-model="checkbox4"
               label="5 estrellas"
+              @change="filtro(5)"
             />
           </v-col>
         </v-row>
@@ -103,7 +113,7 @@
                   v-model="dialog"
                   width="500"
                 >
-                  <template v-slot:activator="{ on, attrs }">
+                  <template #activator="{ on, attrs }">
                     <v-btn
                       color="red lighten-2"
                       dark
@@ -115,21 +125,24 @@
                   </template>
 
                   <v-card
-                    v-for="y in hotel"
-                    :key="y.id"
+                    v-for="(y,index) in hotel"
+                    :key="index"
                   >
                     <v-card-title class="text-h5 grey lighten-2">
-                      {{y.name}}
+                      {{ y.name }}
                     </v-card-title>
 
                     <v-card-text>
-                      {{y.name}}
+                      Habitaciones - {{ y.attributes.rooms }}
+                    </v-card-text>
+                    <v-card-text>
+                      Empleados - {{ y.attributes.staff }}
                     </v-card-text>
 
-                    <v-divider></v-divider>
+                    <v-divider />
 
                     <v-card-actions>
-                      <v-spacer></v-spacer>
+                      <v-spacer />
                       <v-btn
                         color="primary"
                         text
@@ -153,12 +166,15 @@
 import Vue from 'vue'
 export default Vue.extend({
   data: () => ({
-    search: '',
+    checkbox: false,
+    checkbox1: false,
+    checkbox2: false,
+    checkbox3: false,
+    checkbox4: false,
     loading: false,
     selection: 1,
-    id: '',
     dialog: false,
-    options: []
+    id: ''
   }),
   computed: {
     hotels () {
@@ -166,9 +182,6 @@ export default Vue.extend({
     },
     hotel () {
       return this.$store.state.hotel
-    },
-    fiterd () {
-      return this.options.filter((x:any) => x.name.include)
     }
   },
   mounted () {
@@ -176,9 +189,17 @@ export default Vue.extend({
     this.$store.dispatch('getHotel', this.id)
   },
   methods: {
+    filtro (param: number) {
+      if (this.checkbox === true || this.checkbox1 === true ||
+      this.checkbox2 === true || this.checkbox3 === true || this.checkbox4 === true) {
+        this.$store.commit('filter', param)
+      } else if (this.checkbox === false || this.checkbox1 === false ||
+      this.checkbox2 === false || this.checkbox3 === false || this.checkbox4 === false) {
+        this.$store.dispatch('getHoteles')
+      }
+    },
     reserve () {
       this.loading = true
-
       setTimeout(() => (this.loading = false), 2000)
       alert('Su habitación ha sido reservada correctamente')
     }
